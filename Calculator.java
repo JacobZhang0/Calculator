@@ -4,6 +4,8 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -35,6 +37,7 @@ public class Calculator {
         displayField.setEditable(true);
         displayField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         displayField.setPreferredSize(new Dimension(displayField.getPreferredSize().width, 30));
+        displayField.addKeyListener(new EnterKeyListener());
         panel.add(displayField, BorderLayout.NORTH);
 
         JPanel buttonPanel = new JPanel();
@@ -66,13 +69,7 @@ public class Calculator {
             String buttonText = source.getText();
 
             if (buttonText.equals("=")) {
-                String expression = displayField.getText();
-                try {
-                    double result = evaluateExpression(expression);
-                    displayField.setText(String.valueOf(result));
-                } catch (IllegalArgumentException ex) {
-                    displayField.setText("Error");
-                }
+                calculateExpression();
             } else if (buttonText.equals("C")) {
                 displayField.setText("");
             } else {
@@ -81,8 +78,33 @@ public class Calculator {
             }
         }
 
-        private double evaluateExpression(String expression) {
-            return CalculatorEngine.evaluate(expression);
+        private void calculateExpression() {
+            String expression = displayField.getText();
+            try {
+                double result = CalculatorEngine.evaluate(expression);
+                displayField.setText(String.valueOf(result));
+            } catch (IllegalArgumentException ex) {
+                displayField.setText("Error");
+            }
+        }
+    }
+
+    static class EnterKeyListener extends KeyAdapter {
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                calculateExpression();
+            }
+        }
+
+        private void calculateExpression() {
+            String expression = displayField.getText();
+            try {
+                double result = CalculatorEngine.evaluate(expression);
+                displayField.setText(String.valueOf(result));
+            } catch (IllegalArgumentException ex) {
+                displayField.setText("Error");
+            }
         }
     }
 }
